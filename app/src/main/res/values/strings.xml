@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">LucidDreamingHelper</string>
+    <string name="title_activity_session_selector">SessionSelectorActivity</string>
+</resources>
