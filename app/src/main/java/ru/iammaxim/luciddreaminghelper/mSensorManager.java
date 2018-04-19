@@ -12,16 +12,16 @@ import java.text.SimpleDateFormat;
  * Created by maxim on 1/27/18.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class mSensorManager {
-    public static final int HISTORY_LENGTH = 32;
+    public static final int HISTORY_LENGTH = 128;
+    public static final int REALTIME_SMOOTH_SAMPLES = 16;
     public static final String
             output_dir = Environment.getExternalStorageDirectory() + "/LucidDreamingHelper/",
             filename_prefix = "session_",
             filename_postfix = ".bin";
     private static final int CURRENT_VERSION = 2;
     public static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy_HH:mm:ss");
-    private static File outFile;
-    private static FileOutputStream fos;
     private static DataOutputStream dos;
     private long startTime;
 
@@ -32,31 +32,37 @@ public class mSensorManager {
             hax = new double[HISTORY_LENGTH],
             hay = new double[HISTORY_LENGTH],
             haz = new double[HISTORY_LENGTH];
-    private double[]
-            hgx = new double[HISTORY_LENGTH],
-            hgy = new double[HISTORY_LENGTH],
-            hgz = new double[HISTORY_LENGTH];
 
-    public mSensorManager() throws IOException {
+    public double[] derivative = new double[HISTORY_LENGTH];
+    public double[] smoothed_derivative = new double[HISTORY_LENGTH];
+
+    public mSensorManager() {
+    }
+
+    public void initRecording() throws IOException {
         File dir = new File(output_dir);
         if (!dir.exists())
             dir.mkdirs();
-        outFile = new File(output_dir + filename_prefix + sdf.format(System.currentTimeMillis()) + filename_postfix);
+        File outFile = new File(output_dir + filename_prefix + sdf.format(System.currentTimeMillis()) + filename_postfix);
         if (!outFile.exists())
             outFile.createNewFile();
-        fos = new FileOutputStream(outFile);
+        FileOutputStream fos = new FileOutputStream(outFile);
         dos = new DataOutputStream(fos);
         startTime = System.currentTimeMillis();
         dos.writeInt(CURRENT_VERSION);
     }
 
-    /**
-     * @param lag       amount of points to take in account
-     * @param threshold deviation limit
-     * @param influence [0..1], .....
-     * @return
-     */
-    public static double processUpdate(double[] y, float threshold, float influence) {
+    public static final long minPeakPeriod = 2000;
+    public static final double noiseThreshold = 0.08;
+    public double prevDer = 0;
+    public long lastPeakTime = 0;
+    public double lastPeak = -1000;
+    public double localMax;
+    public double localMin;
+    public double localAmpl;
+    public boolean isNoise = false;
+
+    public void processUpdate(long time) {
 //        double[] signals = new double[HISTORY_LENGTH];
 //        Arrays.fill(signals, 0);
 //        double[] filteredY = new double[HISTORY_LENGTH];
@@ -85,57 +91,65 @@ public class mSensorManager {
 //            }
 //        }
 //        return signals;
+        double[] y = hay;
 
-        double[] derivative = new double[HISTORY_LENGTH];
-        double[] smoothed_derivative = new double[HISTORY_LENGTH];
+        if (y[y.length - 1] > lastPeak)
+            lastPeak = y[y.length - 1];
 
-        // find derivative
-        for (int i = 1; i < HISTORY_LENGTH; i++)
-            derivative[i] = y[i] - y[i - 1];
+        // add derivative
+        derivative[HISTORY_LENGTH - 1] = y[HISTORY_LENGTH - 1] - y[HISTORY_LENGTH - 2];
 
-        int smooth_factor = 5;
+        int smooth_factor = 16;
         // smooth derivative
-        for (int i = smooth_factor; i < HISTORY_LENGTH; i++) {
+        {
             double out = 0;
-            for (int j = i - smooth_factor; j < i; j++)
-                out += derivative[j];
+            for (int i = HISTORY_LENGTH - smooth_factor; i < HISTORY_LENGTH; i++)
+                out += derivative[i];
             out /= smooth_factor;
-            smoothed_derivative[i] = out;
+            appendToHistory(smoothed_derivative, out);
         }
 
-        return smoothed_derivative[HISTORY_LENGTH - 1];
-    }
-
-    private static double mean(double[] arr, int start, int end) {
-        double mean = 0;
-        for (int i = start; i < end; i++) {
-            mean += arr[i];
+        int ampl_factor = 64;
+        localMin = 100000;
+        localMax = -100000;
+        for (int i = HISTORY_LENGTH - ampl_factor; i < HISTORY_LENGTH; i++) {
+            if (y[i] < localMin)
+                localMin = y[i];
+            if (y[i] > localMax)
+                localMax = y[i];
         }
-        mean /= end - start;
-        return mean;
-    }
+        localAmpl = localMax - localMin;
+        isNoise = localAmpl < noiseThreshold;
 
-    private static double std(double[] arr, int start, int end, double mean) {
-        double std = 0;
-        for (int i = start; i < end; i++) {
-            std += (arr[i] - mean) * (arr[i] - mean);
+        if (isNoise)
+            return;
+
+        double der = smoothed_derivative[HISTORY_LENGTH - 1];
+
+        double isPeak = prevDer >= 0 && der < 0 ? lastPeak : 0;
+        if (time - lastPeakTime < minPeakPeriod)
+            isPeak = 0;
+
+        prevDer = der;
+        if (isPeak != 0) {
+            lastPeakTime = time;
+            lastPeak = -1000;
         }
-        std /= end - start;
-        std = Math.sqrt(std);
-        return std;
     }
 
-    public void onGyroUpdated(double x, double y, double z) throws IOException {
-        appendToHistory(hgx, x);
-        appendToHistory(hgy, y);
-        appendToHistory(hgz, z);
-        long time = System.currentTimeMillis() - startTime;
+    public double smooth(double[] arr, double newValue) {
+        double out = 0;
+        for (int i = HISTORY_LENGTH - REALTIME_SMOOTH_SAMPLES; i < HISTORY_LENGTH; i++)
+            out += arr[i];
+        out += newValue;
+        out /= arr.length + 1;
+        return out;
+    }
 
-        dos.writeByte(GYRO);
-        dos.writeLong(time);
-        dos.writeDouble(x);
-        dos.writeDouble(y);
-        dos.writeDouble(z);
+    public void add(double x, double y, double z) {
+        appendToHistory(hax, x);
+        appendToHistory(hay, y);
+        appendToHistory(haz, z);
     }
 
     public void onAccelUpdated(double x, double y, double z) throws IOException {
@@ -151,7 +165,7 @@ public class mSensorManager {
         dos.writeDouble(z);
     }
 
-    private void appendToHistory(double[] h, double value) {
+    private static void appendToHistory(double[] h, double value) {
         System.arraycopy(h, 1, h, 0, HISTORY_LENGTH - 1);
         h[h.length - 1] = value;
     }

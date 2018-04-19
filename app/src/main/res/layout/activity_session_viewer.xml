@@ -41,36 +41,60 @@
             android:paddingTop="4dp"
             app:srcCompat="@android:color/darker_gray" />
 
-        <TextView
+        <CheckBox
+            android:id="@+id/cb7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enable accel/gyro parts" />
+            android:checked="true"
+            android:text="Enable accelerometer part" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <CheckBox
-                android:id="@+id/cb7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="true" />
-
-            <CheckBox
-                android:id="@+id/cb8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="true" />
-
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enable graphs (AX, AY, AZ, GX, GY, GZ)" />
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enable graphs" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:src="#ff0000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="X" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:src="#00ff00" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Y" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:src="#0000ff" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Z" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,70 +105,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:checked="true" />
+                android:checked="true"
+                android:text="X" />
 
             <CheckBox
                 android:id="@+id/cb2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:checked="true" />
+                android:checked="true"
+                android:text="Y" />
 
             <CheckBox
                 android:id="@+id/cb3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:checked="true" />
+                android:checked="true"
+                android:text="Z" />
 
-            <CheckBox
-                android:id="@+id/cb4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="true" />
-
-            <CheckBox
-                android:id="@+id/cb5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="true" />
-
-            <CheckBox
-                android:id="@+id/cb6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="true" />
-
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:paddingBottom="4dp"
-            android:paddingTop="4dp"
-            app:srcCompat="@android:color/darker_gray" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/reset_graphs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="Reset graphs" />
-
-            <Button
-                android:id="@+id/reset_output"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="Reset output" />
         </LinearLayout>
 
         <ImageView
@@ -184,78 +163,34 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Accelerometer data (X, Y, Z)"
+                android:text="Accelerometer data"
                 android:textAlignment="center" />
 
-            <ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout
+            <ru.iammaxim.luciddreaminghelper.TouchPassingFrameLayout
                 android:id="@+id/accel_part"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
                 <ru.iammaxim.graphlib.LineGraph
                     android:id="@+id/view1"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="match_parent" />
 
 
                 <ru.iammaxim.graphlib.LineGraph
                     android:id="@+id/view2"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="match_parent" />
 
 
                 <ru.iammaxim.graphlib.LineGraph
                     android:id="@+id/view3"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="match_parent" />
 
-            </ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout>
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:paddingBottom="4dp"
-                android:paddingTop="4dp"
-                app:srcCompat="@android:color/darker_gray" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Gyroscope data (X, Y, Z)"
-                android:textAlignment="center" />
-
-            <ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout
-                android:id="@+id/gyro_part"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <ru.iammaxim.graphlib.LineGraph
-                    android:id="@+id/view4"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-                <ru.iammaxim.graphlib.LineGraph
-                    android:id="@+id/view5"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-                <ru.iammaxim.graphlib.LineGraph
-                    android:id="@+id/view6"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-            </ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout>
+            </ru.iammaxim.luciddreaminghelper.TouchPassingFrameLayout>
 
             <ImageView
                 android:layout_width="match_parent"
@@ -271,25 +206,35 @@
                 android:text="Output"
                 android:textAlignment="center" />
 
-            <ru.iammaxim.graphlib.LineGraph
-                android:id="@+id/view7"
+            <ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:paddingBottom="4dp"
-                android:paddingTop="4dp"
-                app:srcCompat="@android:color/darker_gray" />
+                <ru.iammaxim.graphlib.LineGraph
+                    android:id="@+id/view7"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
-            <ru.iammaxim.graphlib.LineGraph
-                android:id="@+id/view8"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:paddingBottom="4dp"
+                    android:paddingTop="4dp"
+                    app:srcCompat="@android:color/darker_gray" />
+
+                <ru.iammaxim.graphlib.LineGraph
+                    android:id="@+id/view8"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+            </ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout>
+
+
         </ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout>
 
         <ProgressBar

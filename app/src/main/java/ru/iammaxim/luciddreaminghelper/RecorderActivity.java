@@ -25,9 +25,8 @@ public class RecorderActivity extends AppCompatActivity implements SensorEventLi
     private SensorManager sensorManager;
     private mSensorManager mSensorManager;
     private LineGraph
-            gax, gay, gaz,
-            ggx, ggy, ggz;
-    private int counterA = 0, counterG = 0;
+            gax, gay, gaz;
+    private int counterA = 0;
     private boolean graphsEnabled = true;
 
     @Override
@@ -38,9 +37,6 @@ public class RecorderActivity extends AppCompatActivity implements SensorEventLi
         gax = findViewById(R.id.view1);
         gay = findViewById(R.id.view2);
         gaz = findViewById(R.id.view3);
-        ggx = findViewById(R.id.view4);
-        ggy = findViewById(R.id.view5);
-        ggz = findViewById(R.id.view6);
 
         CheckBox enable_graphs = findViewById(R.id.enable_graphs);
         enable_graphs.setChecked(graphsEnabled);
@@ -65,8 +61,6 @@ public class RecorderActivity extends AppCompatActivity implements SensorEventLi
         try {
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
                 mSensorManager.onAccelUpdated(event.values[0], event.values[1], event.values[2]);
-            else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE)
-                mSensorManager.onGyroUpdated(event.values[0], event.values[1], event.values[2]);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,21 +82,6 @@ public class RecorderActivity extends AppCompatActivity implements SensorEventLi
         try {
             mSensorManager = new mSensorManager() {
                 @Override
-                public void onGyroUpdated(double x, double y, double z) {
-                    try {
-                        super.onGyroUpdated(x, y, z);
-                        if (graphsEnabled) {
-                            ggx.add(counterG, (float) x);
-                            ggy.add(counterG, (float) y);
-                            ggz.add(counterG, (float) z);
-                            counterG++;
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
                 public void onAccelUpdated(double x, double y, double z) {
                     try {
                         super.onAccelUpdated(x, y, z);
@@ -117,6 +96,7 @@ public class RecorderActivity extends AppCompatActivity implements SensorEventLi
                     }
                 }
             };
+            mSensorManager.initRecording();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -154,14 +134,10 @@ public class RecorderActivity extends AppCompatActivity implements SensorEventLi
         gax.clear();
         gay.clear();
         gaz.clear();
-        ggx.clear();
-        ggy.clear();
-        ggz.clear();
     }
 
     private void registerSensorListeners() {
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private void unregisterSensorListeners() {
