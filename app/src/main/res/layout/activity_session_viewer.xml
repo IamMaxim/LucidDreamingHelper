@@ -41,13 +41,6 @@
             android:paddingTop="4dp"
             app:srcCompat="@android:color/darker_gray" />
 
-        <CheckBox
-            android:id="@+id/cb7"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Enable accelerometer part" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -166,31 +159,11 @@
                 android:text="Accelerometer data"
                 android:textAlignment="center" />
 
-            <ru.iammaxim.luciddreaminghelper.TouchPassingFrameLayout
-                android:id="@+id/accel_part"
+            <ru.iammaxim.graphlib.LineGraph
+                android:id="@+id/view1"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <ru.iammaxim.graphlib.LineGraph
-                    android:id="@+id/view1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-
-                <ru.iammaxim.graphlib.LineGraph
-                    android:id="@+id/view2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-
-                <ru.iammaxim.graphlib.LineGraph
-                    android:id="@+id/view3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-            </ru.iammaxim.luciddreaminghelper.TouchPassingFrameLayout>
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -206,33 +179,11 @@
                 android:text="Output"
                 android:textAlignment="center" />
 
-            <ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout
+            <ru.iammaxim.graphlib.LineGraph
+                android:id="@+id/view7"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <ru.iammaxim.graphlib.LineGraph
-                    android:id="@+id/view7"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:paddingBottom="4dp"
-                    android:paddingTop="4dp"
-                    app:srcCompat="@android:color/darker_gray" />
-
-                <ru.iammaxim.graphlib.LineGraph
-                    android:id="@+id/view8"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-            </ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout>
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
 
         </ru.iammaxim.luciddreaminghelper.TouchPassingLinearLayout>

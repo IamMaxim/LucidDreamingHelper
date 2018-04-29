@@ -19,9 +19,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets {
-        main.java.srcDirs += '/home/maxim/Android/GraphLib/app/src/main/java'
-    }
+//    sourceSets {
+//        main.java.srcDirs += '/home/maxim/Android/GraphLib/app/src/main/java'
+//    }
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8

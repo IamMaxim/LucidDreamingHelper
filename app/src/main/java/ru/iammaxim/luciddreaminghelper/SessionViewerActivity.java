@@ -24,12 +24,9 @@ import static ru.iammaxim.luciddreaminghelper.mSensorManager.ACCEL;
 import static ru.iammaxim.luciddreaminghelper.mSensorManager.GYRO;
 
 public class SessionViewerActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
-    private LineGraph
-            gax, gay, gaz,
-            gsay, gsay2;
+    private LineGraph ga, gsay;
     private View settings_panel;
     private View open_button;
-    private View accel_part;
     SeekBar sb1, sb2;
     ProgressBar pb;
     mSensorManager sm = new mSensorManager();
@@ -39,34 +36,27 @@ public class SessionViewerActivity extends AppCompatActivity implements View.OnC
         settings_panel = findViewById(R.id.settings_panel);
         open_button = findViewById(R.id.open);
 
-        gax = findViewById(R.id.view1);
-        gay = findViewById(R.id.view2);
-        gaz = findViewById(R.id.view3);
+        ga = findViewById(R.id.view1);
         gsay = findViewById(R.id.view7);
-        gsay2 = findViewById(R.id.view8);
 
-        gax.setGraphColor(0xffff0000);
-        gay.setGraphColor(0xff00ff00);
-        gaz.setGraphColor(0xff0000ff);
+        ga.setGraphColor(0, 0xffff0000);
+        ga.setGraphColor(1, 0xff00ff00);
+        ga.setGraphColor(2, 0xff0000ff);
 
-        gsay2.setGraphColor(0xffff0000);
+        gsay.setGraphColor(1, 0xffff0000);
 
         CheckBox cb1 = findViewById(R.id.cb1);
         CheckBox cb2 = findViewById(R.id.cb2);
         CheckBox cb3 = findViewById(R.id.cb3);
-        CheckBox cb7 = findViewById(R.id.cb7);
 
         cb1.setOnCheckedChangeListener(this);
         cb2.setOnCheckedChangeListener(this);
         cb3.setOnCheckedChangeListener(this);
-        cb7.setOnCheckedChangeListener(this);
 
         sb1 = findViewById(R.id.sb1);
         sb2 = findViewById(R.id.sb2);
         sb1.setOnSeekBarChangeListener(this);
         sb2.setOnSeekBarChangeListener(this);
-
-        accel_part = findViewById(R.id.accel_part);
     }
 
     @Override
@@ -148,8 +138,8 @@ public class SessionViewerActivity extends AppCompatActivity implements View.OnC
                     sm.add(x, y, z);
                     sm.processUpdate(time);
 
-                    gsay.add(time, (float) sm.avgAmpl);
-                    gsay2.add(time, (float) sm.avgFreq);
+                    gsay.add(0, time, (float) sm.avgAmpl);
+                    gsay.add(1, time, (float) sm.avgFreq);
                     break;
                 case GYRO:
                     break;
@@ -168,63 +158,48 @@ public class SessionViewerActivity extends AppCompatActivity implements View.OnC
 //        }
 //        gsay.add(signal);
 
-        gax.addAll(dax);
+        ga.addAll(0, dax);
         dax.clear();
-        gay.addAll(day);
+        ga.addAll(1, day);
         day.clear();
-        gaz.addAll(daz);
+        ga.addAll(2, daz);
         daz.clear();
-        setXzoom(100f / gax.size());
+        setXzoom(100f / ga.size());
     }
 
     private void disableAutoYzoom() {
-        gax.setAutoYzoom(false);
-        gay.setAutoYzoom(false);
-        gaz.setAutoYzoom(false);
-
+        ga.setAutoYzoom(false);
         gsay.setAutoYzoom(false);
     }
 
     private void setMinY(float y) {
-        gax.setMinY(y, false);
-        gay.setMinY(y, false);
-        gaz.setMinY(y, false);
-
+        ga.setMinY(y, false);
         gsay.setMinY(y, false);
     }
 
     private void setMaxY(float y) {
-        gax.setMaxY(y, false);
-        gay.setMaxY(y, false);
-        gaz.setMaxY(y, false);
-
+        ga.setMaxY(y, false);
         gsay.setMaxY(y, false);
     }
 
     private void setXzoom(float zoom) {
-        gax.setXzoom(zoom);
-        gay.setXzoom(zoom);
-        gaz.setXzoom(zoom);
-
+        ga.setXzoom(zoom);
         gsay.setXzoom(zoom);
-        gsay2.setXzoom(zoom);
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
-            case R.id.cb1:
-                gax.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                break;
-            case R.id.cb2:
-                gay.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                break;
-            case R.id.cb3:
-                gaz.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                break;
-            case R.id.cb7:
-                accel_part.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                break;
+            // TODO: fix this
+//            case R.id.cb1:
+//                ga.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+//                break;
+//            case R.id.cb2:
+//                gay.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+//                break;
+//            case R.id.cb3:
+//                gaz.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+//                break;
         }
     }
 
