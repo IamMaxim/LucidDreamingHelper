@@ -33,6 +33,7 @@ public class mSensorManager {
             hay = new double[HISTORY_LENGTH],
             haz = new double[HISTORY_LENGTH];
 
+    public long[] intervals = new long[HISTORY_LENGTH];
     public double[] derivative = new double[HISTORY_LENGTH];
     public double[] smoothed_derivative = new double[HISTORY_LENGTH];
 
@@ -59,7 +60,9 @@ public class mSensorManager {
     public double lastPeak = -1000;
     public double localMax;
     public double localMin;
-    public double localAmpl;
+    public double avgAmpl;
+    public long avgInterval;
+    public double avgFreq;
     public boolean isNoise = false;
 
     public void processUpdate(long time) {
@@ -118,8 +121,8 @@ public class mSensorManager {
             if (y[i] > localMax)
                 localMax = y[i];
         }
-        localAmpl = localMax - localMin;
-        isNoise = localAmpl < noiseThreshold;
+        avgAmpl = localMax - localMin;
+        isNoise = avgAmpl < noiseThreshold;
 
         if (isNoise)
             return;
@@ -127,23 +130,23 @@ public class mSensorManager {
         double der = smoothed_derivative[HISTORY_LENGTH - 1];
 
         double isPeak = prevDer >= 0 && der < 0 ? lastPeak : 0;
-        if (time - lastPeakTime < minPeakPeriod)
+        long interval = time - lastPeakTime;
+        if (interval < minPeakPeriod)
             isPeak = 0;
 
         prevDer = der;
         if (isPeak != 0) {
             lastPeakTime = time;
             lastPeak = -1000;
-        }
-    }
+            appendToHistory(intervals, interval);
 
-    public double smooth(double[] arr, double newValue) {
-        double out = 0;
-        for (int i = HISTORY_LENGTH - REALTIME_SMOOTH_SAMPLES; i < HISTORY_LENGTH; i++)
-            out += arr[i];
-        out += newValue;
-        out /= arr.length + 1;
-        return out;
+            int interval_factor = 16;
+            avgInterval = 0;
+            for (int i = HISTORY_LENGTH - interval_factor; i < HISTORY_LENGTH; i++)
+                avgInterval += intervals[i];
+            avgInterval /= interval_factor;
+            avgFreq = 60000 / avgInterval;
+        }
     }
 
     public void add(double x, double y, double z) {
@@ -166,6 +169,11 @@ public class mSensorManager {
     }
 
     private static void appendToHistory(double[] h, double value) {
+        System.arraycopy(h, 1, h, 0, HISTORY_LENGTH - 1);
+        h[h.length - 1] = value;
+    }
+
+    private static void appendToHistory(long[] h, long value) {
         System.arraycopy(h, 1, h, 0, HISTORY_LENGTH - 1);
         h[h.length - 1] = value;
     }

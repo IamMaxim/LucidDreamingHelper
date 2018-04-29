@@ -148,8 +148,8 @@ public class SessionViewerActivity extends AppCompatActivity implements View.OnC
                     sm.add(x, y, z);
                     sm.processUpdate(time);
 
-                    gsay.add(time, (float) sm.localAmpl);
-                    gsay2.add(time, sm.isNoise ? 1 : 0);
+                    gsay.add(time, (float) sm.avgAmpl);
+                    gsay2.add(time, (float) sm.avgFreq);
                     break;
                 case GYRO:
                     break;

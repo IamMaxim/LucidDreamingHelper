@@ -12,42 +12,24 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.CheckBox;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.io.IOException;
-
-import ru.iammaxim.graphlib.LineGraph;
 
 public class RecorderActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
     private static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 2871;
 
     private SensorManager sensorManager;
     private mSensorManager mSensorManager;
-    private LineGraph
-            gax, gay, gaz;
-    private int counterA = 0;
-    private boolean graphsEnabled = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorder);
-
-        gax = findViewById(R.id.view1);
-        gay = findViewById(R.id.view2);
-        gaz = findViewById(R.id.view3);
-
-        CheckBox enable_graphs = findViewById(R.id.enable_graphs);
-        enable_graphs.setChecked(graphsEnabled);
-        enable_graphs.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                graphsEnabled = true;
-            } else {
-                graphsEnabled = false;
-                clearGraphs();
-            }
-        });
+        // don't turn off screen while recording;
+        // otherwise, phone will go into sleep and prevent proper sensor recording
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
@@ -80,22 +62,7 @@ public class RecorderActivity extends AppCompatActivity implements SensorEventLi
 
     private void init() {
         try {
-            mSensorManager = new mSensorManager() {
-                @Override
-                public void onAccelUpdated(double x, double y, double z) {
-                    try {
-                        super.onAccelUpdated(x, y, z);
-                        if (graphsEnabled) {
-                            gax.add(counterA, (float) x);
-                            gay.add(counterA, (float) y);
-                            gaz.add(counterA, (float) z);
-                            counterA++;
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
+            mSensorManager = new mSensorManager();
             mSensorManager.initRecording();
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,9 +79,6 @@ public class RecorderActivity extends AppCompatActivity implements SensorEventLi
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.clear:
-                clearGraphs();
-                break;
             case R.id.stop:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Stop");
@@ -124,16 +88,11 @@ public class RecorderActivity extends AppCompatActivity implements SensorEventLi
                 builder.setPositiveButton("Yes", (dialog, which) -> {
                     unregisterSensorListeners();
                     mSensorManager.stop();
+                    finish();
                 });
                 builder.show();
                 break;
         }
-    }
-
-    private void clearGraphs() {
-        gax.clear();
-        gay.clear();
-        gaz.clear();
     }
 
     private void registerSensorListeners() {
